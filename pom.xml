@@ -1,0 +1,167 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.analysis.findata</groupId>
+	<artifactId>FinData</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>FinData</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spark.version>2.1.0</spark.version>
+		<spark.scala.version>2.11</spark.scala.version>
+		<hadoop.version>2.7.3</hadoop.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-core_${spark.scala.version}</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-yarn_${spark.scala.version}</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-sql_${spark.scala.version}</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+
+		<!-- for hive -->
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-hive_${spark.scala.version}</artifactId>
+			<version>${spark.version}</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.datanucleus</groupId> <artifactId>datanucleus-core</artifactId> 
+			<version>3.0.2</version> </dependency> <dependency> <groupId>org.datanucleus</groupId> 
+			<artifactId>datanucleus-api-jdo</artifactId> <version>3.0.2</version> </dependency> 
+			<dependency> <groupId>org.datanucleus</groupId> <artifactId>datanucleus-api-jpa</artifactId> 
+			<version>3.0.2</version> </dependency> <dependency> <groupId>org.datanucleus</groupId> 
+			<artifactId>datanucleus-rdbms</artifactId> <version>3.0.2</version> </dependency> -->
+
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.datanucleus</groupId>
+			<artifactId>datanucleus-core</artifactId>
+			<version>3.2.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.datanucleus</groupId>
+			<artifactId>datanucleus-api-jdo</artifactId>
+			<version>3.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.datanucleus</groupId>
+			<artifactId>datanucleus-rdbms</artifactId>
+			<version>3.2.9</version>
+		</dependency>
+	</dependencies>
+
+	<!-- <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>findata-fat</finalName>
+							<archive>
+								<manifest>
+									<mainClass> com.analysis.findata.FinData.AppMain </mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build> -->
+
+	<!-- required at run time by hive -->
+
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Main-Class>com.analysis.findata.FinData.AppMainTwo</Main-Class>
+										<Premain-Class>org.datanucleus.enhancer.DataNucleusClassFileTransformer</Premain-Class>
+										<Bundle-SymbolicName>org.datanucleus;singleton:=true</Bundle-SymbolicName>
+									</manifestEntries>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>reference.conf</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<!-- Additional configuration. -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

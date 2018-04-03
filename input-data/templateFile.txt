@@ -1,0 +1,2 @@
+{garbage}Dear Customer~ as per your request your ICICI Bank Deposit Acct {actNumber} for INR. {amt} has been pre-closed on {msgDate}. For dtls~ pls call our Cust{ignore}
+Your buy order dated {msgData} of {shareName}{extraSpace}for {numberShare} shares has been executed at an average price of {avgShare}.
